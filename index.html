@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket.IO Chat</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+
+    function setUsername() {
+      var username = document.getElementById('username').value;
+      if (username) {
+        socket.emit('setUsername', username);
+        document.getElementById('username-container').style.display = 'none';
+        document.getElementById('chat-container').style.display = 'block';
+      } else {
+        alert('Per favore, inserisci un username.');
+      }
+    }
+
+    // Ricevi e visualizza i messaggi precedenti
+    socket.on('previousMessages', function(messages) {
+      messages.forEach(function(msg) {
+        var item = document.createElement('li');
+        item.textContent = msg;
+        document.getElementById('messages').appendChild(item);
+      });
+    });
+
+    // Ricevi e visualizza i nuovi messaggi
+    socket.on('messaggio', function(msg){
+      var item = document.createElement('li');
+      item.textContent = msg;
+      document.getElementById('messages').appendChild(item);
+    });
+
+    function sendMessage() {
+      var msg = document.getElementById('message').value;
+      if (msg) {
+        socket.emit('messaggio', msg);
+        document.getElementById('message').value = '';
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="username-container">
+    <input id="username" placeholder="Inserisci il tuo username" autocomplete="off" />
+    <button onclick="setUsername()">Entra in chat</button>
+  </div>
+
+  <div id="chat-container" style="display:none;">
+    <ul id="messages"></ul>
+    <input id="message" placeholder="Scrivi un messaggio" autocomplete="off" />
+    <button onclick="sendMessage()">Invia</button>
+  </div>
+</body>
+</html>
